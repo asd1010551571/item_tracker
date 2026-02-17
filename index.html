@@ -5,20 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#09090b">
     <title>Item Tracker</title>
     <style>
         :root {
             --bg: #09090b;
             --card: #18181b;
-            --accent-home: #10b981;
-            --accent-hall: #0ea5e9;
         }
-        
         * { box-sizing: border-box; }
-        
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg); 
             color: #f4f4f5; 
             margin: 0; 
@@ -26,142 +21,123 @@
             min-height: 100vh;
             -webkit-tap-highlight-color: transparent;
         }
-        
         .container { 
             max-width: 640px; 
             margin: 0 auto; 
-            padding: 16px 12px; 
+            padding: 12px 10px; 
         }
-        
         .header { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            padding: 12px 4px 20px; 
+            padding: 10px 6px 18px; 
             position: sticky;
             top: 0;
             background: var(--bg);
             z-index: 10;
         }
-        
-        .header h1 { 
-            font-size: 28px; 
-            font-weight: 700; 
-            margin: 0;
-            letter-spacing: -0.5px;
-        }
-        
-        .card { 
-            background: var(--card); 
-            border-radius: 20px; 
-            overflow: hidden; 
-            margin-bottom: 12px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-        }
-        
-        .item-header {
-            padding: 16px 18px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 19px;
-            font-weight: 600;
-        }
-        
-        .section { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            border-top: 1px solid #27272a;
-        }
-        
-        .location { 
-            padding: 16px 14px; 
-            text-align: center;
-        }
-        
-        .location-label { 
-            font-size: 12px; 
-            font-weight: 600;
-            text-transform: uppercase; 
-            letter-spacing: 0.5px; 
-            margin-bottom: 4px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 5px;
-        }
-        
-        .count { 
-            font-size: 42px; 
-            font-weight: 700; 
-            line-height: 1;
-            margin: 6px 0 12px;
-        }
-        
-        .btn-row {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        
-        .btn { 
-            width: 68px; 
-            height: 68px; 
-            font-size: 36px; 
-            border-radius: 9999px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-weight: 300;
-            transition: transform 0.1s;
-        }
-        
-        .btn:active { 
-            transform: scale(0.88); 
-        }
-        
-        .btn-minus { background: #27272a; color: #ddd; }
-        .btn-plus-home { background: var(--accent-home); color: white; }
-        .btn-plus-hall { background: var(--accent-hall); color: white; }
-        
-        .total-bar { 
-            padding: 12px 18px; 
-            font-size: 15px; 
-            font-weight: 600;
-            display: flex; 
-            justify-content: space-between; 
-            background: #111113; 
-        }
+        .header h1 { font-size: 27px; font-weight: 700; margin: 0; letter-spacing: -0.5px; }
         
         .add-bar {
             background: #27272a; 
             border-radius: 9999px; 
-            padding: 6px; 
+            padding: 5px; 
             display: flex; 
-            margin: 12px 0 24px;
+            margin-bottom: 18px;
         }
-        
         #item-input { 
             background: transparent; 
             border: none; 
-            padding: 16px 20px; 
+            padding: 15px 18px; 
             color: white; 
             font-size: 17px; 
             flex: 1; 
             outline: none;
         }
-        
         .add-btn { 
             background: white; 
             color: black; 
             font-weight: 700; 
-            padding: 0 28px; 
+            padding: 0 26px; 
             border-radius: 9999px; 
             font-size: 16px;
+        }
+
+        .card { 
+            background: var(--card); 
+            border-radius: 18px; 
+            overflow: hidden; 
+            margin-bottom: 10px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.35);
+        }
+        .item-header {
+            padding: 13px 16px;
             display: flex;
             align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            background: #111113;
         }
+        .drag-handle {
+            cursor: grab;
+            font-size: 22px;
+            color: #52525b;
+            padding: 0 4px;
+        }
+        .section { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+        }
+        .location { 
+            padding: 13px 12px; 
+            text-align: center;
+            border-top: 1px solid #27272a;
+        }
+        .location-label { 
+            font-size: 11.5px; 
+            font-weight: 600;
+            text-transform: uppercase; 
+            letter-spacing: 0.6px; 
+            margin-bottom: 3px; 
+            color: #a1a1aa;
+        }
+        .count { 
+            font-size: 37px; 
+            font-weight: 700; 
+            line-height: 1;
+            margin: 4px 0 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .count:active { opacity: 0.6; }
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+        }
+        .btn { 
+            width: 58px; 
+            height: 58px; 
+            font-size: 32px; 
+            border-radius: 9999px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .btn:active { transform: scale(0.9); }
+        .btn-minus { background: #27272a; color: #ddd; }
+        .btn-plus-home { background: #10b981; color: white; }
+        .btn-plus-hall { background: #0ea5e9; color: white; }
         
+        .total-bar { 
+            padding: 10px 16px; 
+            font-size: 14.5px; 
+            display: flex; 
+            justify-content: space-between; 
+            background: #111113; 
+            font-weight: 500;
+        }
         .toast { 
             position: fixed; 
             bottom: 40px; 
@@ -169,59 +145,49 @@
             transform: translateX(-50%); 
             background: #27272a; 
             color: white; 
-            padding: 14px 26px; 
+            padding: 13px 24px; 
             border-radius: 9999px; 
-            font-size: 16px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
+            font-size: 15.5px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6); 
             opacity: 0; 
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s;
             z-index: 100;
         }
-        
         .empty {
             text-align: center;
-            padding: 100px 20px 60px;
+            padding: 90px 20px;
             color: #71717a;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <div class="header">
             <div>
                 <h1>Item Tracker</h1>
-                <p style="margin:4px 0 0; font-size:13px; color:#a1a1aa;">Home • Hall • Private &amp; Fast</p>
             </div>
-            <button onclick="clearAll()" 
-                    style="background:none;border:none;font-size:26px;color:#ef4444;padding:4px 8px;">🗑️</button>
+            <button onclick="clearAll()" style="background:none;border:none;font-size:24px;color:#ef4444;">🗑️</button>
         </div>
 
-        <!-- Add bar -->
         <div class="add-bar">
-            <input id="item-input" type="text" placeholder="Add new item (e.g. Socks)" 
+            <input id="item-input" type="text" placeholder="New item name..." 
                    onkeypress="if(event.key==='Enter') addItem()">
             <button onclick="addItem()" class="add-btn">ADD</button>
         </div>
 
-        <!-- Items -->
         <div id="items-list"></div>
 
-        <!-- Empty state -->
         <div id="empty-state" class="empty" style="display:none;">
-            <div style="font-size:88px;margin-bottom:16px;">📦</div>
-            <h3 style="font-size:22px;margin:0 0 8px;color:#e4e4e7;">No items yet</h3>
-            <p style="font-size:15px;">Tap ADD above to start tracking</p>
+            <div style="font-size:80px;margin-bottom:12px;">📦</div>
+            <h3>No items yet</h3>
         </div>
     </div>
 
-    <!-- Toast -->
     <div id="toast" class="toast"></div>
 
     <script>
         let items = [];
-        const STORAGE_KEY = 'iphoneItemTracker2026';
+        const STORAGE_KEY = 'iphoneItemTracker2026_v2';
 
         function loadItems() {
             const saved = localStorage.getItem(STORAGE_KEY);
@@ -232,15 +198,11 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
         }
 
-        function showToast(message) {
+        function showToast(msg) {
             const toast = document.getElementById('toast');
-            toast.textContent = message;
+            toast.textContent = msg;
             toast.style.opacity = '1';
-            toast.style.transform = 'translateX(-50%) translateY(0)';
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(-50%) translateY(20px)';
-            }, 2200);
+            setTimeout(() => toast.style.opacity = '0', 2000);
         }
 
         function renderItems() {
@@ -254,30 +216,45 @@
             }
             empty.style.display = 'none';
 
-            items.forEach(item => {
+            items.forEach((item, index) => {
                 const total = item.home + item.hall;
                 const card = document.createElement('div');
                 card.className = 'card';
+                card.draggable = true;
+                card.dataset.id = item.id;
+                
+                card.ondragstart = (e) => {
+                    e.dataTransfer.setData('text/plain', item.id);
+                    card.style.opacity = '0.6';
+                };
+                card.ondragend = () => card.style.opacity = '1';
+                card.ondragover = (e) => e.preventDefault();
+                card.ondrop = (e) => {
+                    e.preventDefault();
+                    const draggedId = e.dataTransfer.getData('text/plain');
+                    if (draggedId !== item.id) {
+                        reorderItems(draggedId, item.id);
+                    }
+                };
+
                 card.innerHTML = `
                     <div class="item-header">
-                        📦 
+                        <span class="drag-handle">≡</span>
                         <span onclick="renameItem('${item.id}')" style="flex:1;cursor:pointer;">${item.name}</span>
-                        <span onclick="deleteItem('${item.id}')" style="font-size:22px;cursor:pointer;color:#ef4444;">🗑️</span>
+                        <span onclick="deleteItem('${item.id}')" style="font-size:21px;color:#ef4444;cursor:pointer;">🗑️</span>
                     </div>
                     <div class="section">
-                        <!-- Home -->
-                        <div class="location">
-                            <div class="location-label" style="color:#34d399;">🏠 HOME</div>
-                            <div class="count" style="color:#34d399;">${item.home}</div>
+                        <div class="location" style="border-right:1px solid #27272a;">
+                            <div class="location-label">🏠 HOME</div>
+                            <div class="count" style="color:#34d399;" onclick="editCount('${item.id}', 'home')">${item.home}</div>
                             <div class="btn-row">
                                 <button onclick="changeCount('${item.id}','home',-1)" class="btn btn-minus">−</button>
                                 <button onclick="changeCount('${item.id}','home',1)" class="btn btn-plus-home">+</button>
                             </div>
                         </div>
-                        <!-- Hall -->
                         <div class="location">
-                            <div class="location-label" style="color:#38bdf8;">🚪 HALL</div>
-                            <div class="count" style="color:#38bdf8;">${item.hall}</div>
+                            <div class="location-label">🚪 HALL</div>
+                            <div class="count" style="color:#38bdf8;" onclick="editCount('${item.id}', 'hall')">${item.hall}</div>
                             <div class="btn-row">
                                 <button onclick="changeCount('${item.id}','hall',-1)" class="btn btn-minus">−</button>
                                 <button onclick="changeCount('${item.id}','hall',1)" class="btn btn-plus-hall">+</button>
@@ -286,11 +263,25 @@
                     </div>
                     <div class="total-bar">
                         <span>Total</span>
-                        <span style="font-size:18px;">${total}</span>
+                        <span>${total}</span>
                     </div>
                 `;
                 container.appendChild(card);
             });
+        }
+
+        function reorderItems(draggedId, targetId) {
+            const draggedIndex = items.findIndex(i => i.id === draggedId);
+            const targetIndex = items.findIndex(i => i.id === targetId);
+            
+            if (draggedIndex === -1 || targetIndex === -1) return;
+            
+            const [movedItem] = items.splice(draggedIndex, 1);
+            items.splice(targetIndex, 0, movedItem);
+            
+            saveItems();
+            renderItems();
+            showToast('✓ Order updated');
         }
 
         window.changeCount = function(id, loc, delta) {
@@ -302,15 +293,36 @@
             renderItems();
         };
 
+        window.editCount = function(id, loc) {
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+            
+            const current = loc === 'home' ? item.home : item.hall;
+            const newVal = prompt(`New ${loc.toUpperCase()} quantity for "${item.name}":`, current);
+            
+            if (newVal === null) return;
+            
+            const num = parseInt(newVal);
+            if (!isNaN(num) && num >= 0) {
+                if (loc === 'home') item.home = num;
+                else item.hall = num;
+                saveItems();
+                renderItems();
+                showToast('✓ Updated');
+            } else {
+                showToast('Please enter a valid number');
+            }
+        };
+
         window.addItem = function() {
             const input = document.getElementById('item-input');
             const name = input.value.trim();
-            if (!name) return showToast('Type an item name');
+            if (!name) return showToast('Enter item name');
             if (items.some(i => i.name.toLowerCase() === name.toLowerCase())) {
-                return showToast('Already exists');
+                return showToast('Item already exists');
             }
             items.unshift({
-                id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+                id: Date.now().toString(36),
                 name: name,
                 home: 0,
                 hall: 0
@@ -322,39 +334,34 @@
         };
 
         window.deleteItem = function(id) {
-            if (!confirm('Delete this item and all counts?')) return;
+            if (!confirm('Delete this item?')) return;
             items = items.filter(i => i.id !== id);
             saveItems();
             renderItems();
-            showToast('🗑️ Deleted');
         };
 
         window.renameItem = function(id) {
             const item = items.find(i => i.id === id);
             if (!item) return;
-            const newName = prompt('New name for this item:', item.name);
+            const newName = prompt('New name:', item.name);
             if (!newName || newName.trim() === item.name) return;
             item.name = newName.trim();
             saveItems();
             renderItems();
-            showToast('✏️ Updated');
         };
 
         window.clearAll = function() {
-            if (items.length === 0) return;
-            if (!confirm('Clear EVERYTHING?')) return;
+            if (!confirm('Clear all items?')) return;
             items = [];
             saveItems();
             renderItems();
-            showToast('🧹 All cleared');
+            showToast('Everything cleared');
         };
 
-        // Initialize
-        window.onload = function() {
+        window.onload = () => {
             loadItems();
             renderItems();
 
-            // Demo data only on first launch
             if (items.length === 0) {
                 items = [
                     {id: 'd1', name: 'T-Shirts', home: 14, hall: 3},
@@ -363,11 +370,6 @@
                 saveItems();
                 renderItems();
             }
-
-            // Auto-focus input
-            setTimeout(() => {
-                document.getElementById('item-input').focus();
-            }, 400);
         };
     </script>
 </body>
