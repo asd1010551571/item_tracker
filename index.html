@@ -2,385 +2,373 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#09090b">
     <title>Item Tracker</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
-        body {
-            font-family: 'Inter', system_ui, sans-serif;
+        :root {
+            --bg: #09090b;
+            --card: #18181b;
+            --accent-home: #10b981;
+            --accent-hall: #0ea5e9;
         }
         
-        .count-display {
-            font-size: 2.75rem;
-            line-height: 1;
-            font-weight: 700;
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg); 
+            color: #f4f4f5; 
+            margin: 0; 
+            padding: 0; 
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
         }
         
-        .item-card {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        .container { 
+            max-width: 640px; 
+            margin: 0 auto; 
+            padding: 16px 12px; 
         }
         
-        .item-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 12px 4px 20px; 
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            z-index: 10;
         }
         
-        .btn-count {
-            width: 48px;
-            height: 48px;
+        .header h1 { 
+            font-size: 28px; 
+            font-weight: 700; 
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+        
+        .card { 
+            background: var(--card); 
+            border-radius: 20px; 
+            overflow: hidden; 
+            margin-bottom: 12px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        
+        .item-header {
+            padding: 16px 18px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.75rem;
+            gap: 12px;
+            font-size: 19px;
+            font-weight: 600;
+        }
+        
+        .section { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            border-top: 1px solid #27272a;
+        }
+        
+        .location { 
+            padding: 16px 14px; 
+            text-align: center;
+        }
+        
+        .location-label { 
+            font-size: 12px; 
+            font-weight: 600;
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+            margin-bottom: 4px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 5px;
+        }
+        
+        .count { 
+            font-size: 42px; 
+            font-weight: 700; 
             line-height: 1;
+            margin: 6px 0 12px;
+        }
+        
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .btn { 
+            width: 68px; 
+            height: 68px; 
+            font-size: 36px; 
+            border-radius: 9999px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: 300;
+            transition: transform 0.1s;
+        }
+        
+        .btn:active { 
+            transform: scale(0.88); 
+        }
+        
+        .btn-minus { background: #27272a; color: #ddd; }
+        .btn-plus-home { background: var(--accent-home); color: white; }
+        .btn-plus-hall { background: var(--accent-hall); color: white; }
+        
+        .total-bar { 
+            padding: 12px 18px; 
+            font-size: 15px; 
+            font-weight: 600;
+            display: flex; 
+            justify-content: space-between; 
+            background: #111113; 
+        }
+        
+        .add-bar {
+            background: #27272a; 
+            border-radius: 9999px; 
+            padding: 6px; 
+            display: flex; 
+            margin: 12px 0 24px;
+        }
+        
+        #item-input { 
+            background: transparent; 
+            border: none; 
+            padding: 16px 20px; 
+            color: white; 
+            font-size: 17px; 
+            flex: 1; 
+            outline: none;
+        }
+        
+        .add-btn { 
+            background: white; 
+            color: black; 
+            font-weight: 700; 
+            padding: 0 28px; 
+            border-radius: 9999px; 
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .toast { 
+            position: fixed; 
+            bottom: 40px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: #27272a; 
+            color: white; 
+            padding: 14px 26px; 
+            border-radius: 9999px; 
+            font-size: 16px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
+            opacity: 0; 
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+        }
+        
+        .empty {
+            text-align: center;
+            padding: 100px 20px 60px;
+            color: #71717a;
         }
     </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen pb-20">
-    <div class="max-w-2xl mx-auto p-4">
+<body>
+    <div class="container">
         <!-- Header -->
-        <div class="flex items-center justify-between mb-8 pt-6">
+        <div class="header">
             <div>
-                <h1 class="text-4xl font-bold tracking-tight">Item Tracker</h1>
-                <p class="text-zinc-400 text-sm mt-1">Home • Hall • Never lose count</p>
+                <h1>Item Tracker</h1>
+                <p style="margin:4px 0 0; font-size:13px; color:#a1a1aa;">Home • Hall • Private &amp; Fast</p>
             </div>
-            <div class="flex items-center gap-3">
-                <button onclick="clearAll()" 
-                        class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-950/50 rounded-2xl transition-colors">
-                    <i class="fa-solid fa-trash"></i>
-                    <span>Clear All</span>
-                </button>
-                <div class="w-10 h-10 bg-emerald-500 rounded-2xl flex items-center justify-center text-white font-bold text-xl">📦</div>
-            </div>
+            <button onclick="clearAll()" 
+                    style="background:none;border:none;font-size:26px;color:#ef4444;padding:4px 8px;">🗑️</button>
         </div>
 
-        <!-- Add new item -->
-        <div class="bg-zinc-900 rounded-3xl p-2 mb-8">
-            <div class="flex gap-2">
-                <input id="item-input" 
-                       type="text" 
-                       placeholder="New item name (e.g. T-Shirts)" 
-                       class="flex-1 bg-transparent px-6 py-5 text-lg outline-none placeholder-zinc-500"
-                       onkeypress="if(event.key === 'Enter') addItem()">
-                <button onclick="addItem()" 
-                        class="bg-white text-zinc-900 px-8 font-semibold rounded-2xl flex items-center gap-2 hover:bg-emerald-400 transition-colors">
-                    <i class="fa-solid fa-plus"></i>
-                    ADD
-                </button>
-            </div>
+        <!-- Add bar -->
+        <div class="add-bar">
+            <input id="item-input" type="text" placeholder="Add new item (e.g. Socks)" 
+                   onkeypress="if(event.key==='Enter') addItem()">
+            <button onclick="addItem()" class="add-btn">ADD</button>
         </div>
 
-        <!-- Items list -->
-        <div id="items-list" class="space-y-4">
-            <!-- Populated by JavaScript -->
-        </div>
+        <!-- Items -->
+        <div id="items-list"></div>
 
         <!-- Empty state -->
-        <div id="empty-state" class="hidden flex flex-col items-center justify-center py-20 text-center">
-            <div class="text-7xl mb-6">📦</div>
-            <h3 class="text-2xl font-semibold mb-2">No items yet</h3>
-            <p class="text-zinc-400 max-w-xs">Add your first item above and start tracking Home vs Hall counts</p>
+        <div id="empty-state" class="empty" style="display:none;">
+            <div style="font-size:88px;margin-bottom:16px;">📦</div>
+            <h3 style="font-size:22px;margin:0 0 8px;color:#e4e4e7;">No items yet</h3>
+            <p style="font-size:15px;">Tap ADD above to start tracking</p>
         </div>
     </div>
 
     <!-- Toast -->
-    <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-zinc-800 text-white px-6 py-3 rounded-2xl flex items-center gap-3 shadow-2xl">
-        <i id="toast-icon" class="fa-solid"></i>
-        <span id="toast-message" class="font-medium"></span>
-    </div>
+    <div id="toast" class="toast"></div>
 
     <script>
-        // Tailwind script already loaded via CDN
-        function initTailwind() {
-            // No extra config needed
-        }
-
-        let items = []
-
-        const STORAGE_KEY = 'itemTrackerData'
+        let items = [];
+        const STORAGE_KEY = 'iphoneItemTracker2026';
 
         function loadItems() {
-            const saved = localStorage.getItem(STORAGE_KEY)
-            if (saved) {
-                items = JSON.parse(saved)
-            }
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) items = JSON.parse(saved);
         }
 
         function saveItems() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
         }
 
-        function showToast(message, icon = 'check', duration = 2500) {
-            const toast = document.getElementById('toast')
-            const toastIcon = document.getElementById('toast-icon')
-            const toastMessage = document.getElementById('toast-message')
-            
-            toastIcon.className = `fa-solid fa-${icon}`
-            toastMessage.textContent = message
-            toast.classList.remove('hidden')
-            toast.style.transform = 'translate(-50%, 0)'
-            
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(-50%) translateY(0)';
             setTimeout(() => {
-                toast.style.transform = 'translate(-50%, 100%)'
-                setTimeout(() => {
-                    toast.classList.add('hidden')
-                }, 300)
-            }, duration)
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(20px)';
+            }, 2200);
         }
 
         function renderItems() {
-            const container = document.getElementById('items-list')
-            const emptyState = document.getElementById('empty-state')
-            
-            container.innerHTML = ''
-            
+            const container = document.getElementById('items-list');
+            const empty = document.getElementById('empty-state');
+            container.innerHTML = '';
+
             if (items.length === 0) {
-                emptyState.classList.remove('hidden')
-                return
+                empty.style.display = 'block';
+                return;
             }
-            
-            emptyState.classList.add('hidden')
-            
+            empty.style.display = 'none';
+
             items.forEach(item => {
-                const total = item.home + item.hall
-                
-                const cardHTML = `
-                    <div class="item-card bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800">
-                        <!-- Header -->
-                        <div class="px-6 py-5 flex items-center justify-between border-b border-zinc-800">
-                            <div onclick="renameItem('${item.id}')" 
-                                 class="flex-1 cursor-pointer group">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-2xl">📦</span>
-                                    <span id="name-${item.id}" 
-                                          class="font-semibold text-xl group-hover:text-emerald-400 transition-colors">
-                                        ${item.name}
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center gap-2">
-                                <div onclick="deleteItem('${item.id}')" 
-                                     class="w-9 h-9 flex items-center justify-center text-red-400 hover:bg-red-950 rounded-2xl cursor-pointer transition-colors">
-                                    <i class="fa-solid fa-trash text-lg"></i>
-                                </div>
+                const total = item.home + item.hall;
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="item-header">
+                        📦 
+                        <span onclick="renameItem('${item.id}')" style="flex:1;cursor:pointer;">${item.name}</span>
+                        <span onclick="deleteItem('${item.id}')" style="font-size:22px;cursor:pointer;color:#ef4444;">🗑️</span>
+                    </div>
+                    <div class="section">
+                        <!-- Home -->
+                        <div class="location">
+                            <div class="location-label" style="color:#34d399;">🏠 HOME</div>
+                            <div class="count" style="color:#34d399;">${item.home}</div>
+                            <div class="btn-row">
+                                <button onclick="changeCount('${item.id}','home',-1)" class="btn btn-minus">−</button>
+                                <button onclick="changeCount('${item.id}','home',1)" class="btn btn-plus-home">+</button>
                             </div>
                         </div>
-                        
-                        <!-- Counts -->
-                        <div class="grid grid-cols-2 gap-px bg-zinc-800">
-                            <!-- Home -->
-                            <div class="bg-zinc-900 p-6">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="flex items-center gap-2 text-emerald-400">
-                                        <i class="fa-solid fa-house"></i>
-                                        <span class="font-medium uppercase tracking-widest text-xs">Home</span>
-                                    </div>
-                                    <div class="text-emerald-400 text-sm font-mono">${item.home}</div>
-                                </div>
-                                
-                                <div class="flex items-center justify-center gap-6">
-                                    <button onclick="changeCount('${item.id}', 'home', -1)" 
-                                            class="btn-count bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 rounded-2xl text-white transition-all active:scale-90">
-                                        −
-                                    </button>
-                                    
-                                    <div class="count-display text-emerald-300 min-w-[80px] text-center">
-                                        ${item.home}
-                                    </div>
-                                    
-                                    <button onclick="changeCount('${item.id}', 'home', 1)" 
-                                            class="btn-count bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 rounded-2xl text-white transition-all active:scale-90">
-                                        +
-                                    </button>
-                                </div>
+                        <!-- Hall -->
+                        <div class="location">
+                            <div class="location-label" style="color:#38bdf8;">🚪 HALL</div>
+                            <div class="count" style="color:#38bdf8;">${item.hall}</div>
+                            <div class="btn-row">
+                                <button onclick="changeCount('${item.id}','hall',-1)" class="btn btn-minus">−</button>
+                                <button onclick="changeCount('${item.id}','hall',1)" class="btn btn-plus-hall">+</button>
                             </div>
-                            
-                            <!-- Hall -->
-                            <div class="bg-zinc-900 p-6">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="flex items-center gap-2 text-sky-400">
-                                        <i class="fa-solid fa-door-open"></i>
-                                        <span class="font-medium uppercase tracking-widest text-xs">Hall</span>
-                                    </div>
-                                    <div class="text-sky-400 text-sm font-mono">${item.hall}</div>
-                                </div>
-                                
-                                <div class="flex items-center justify-center gap-6">
-                                    <button onclick="changeCount('${item.id}', 'hall', -1)" 
-                                            class="btn-count bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 rounded-2xl text-white transition-all active:scale-90">
-                                        −
-                                    </button>
-                                    
-                                    <div class="count-display text-sky-300 min-w-[80px] text-center">
-                                        ${item.hall}
-                                    </div>
-                                    
-                                    <button onclick="changeCount('${item.id}', 'hall', 1)" 
-                                            class="btn-count bg-sky-500 hover:bg-sky-400 active:bg-sky-600 rounded-2xl text-white transition-all active:scale-90">
-                                        +
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Footer total -->
-                        <div class="px-6 py-4 bg-zinc-950 flex items-center justify-between text-xs uppercase tracking-widest">
-                            <span class="text-zinc-500">Total</span>
-                            <span class="font-mono text-lg font-semibold text-white">${total}</span>
                         </div>
                     </div>
-                `
-                container.innerHTML += cardHTML
-            })
+                    <div class="total-bar">
+                        <span>Total</span>
+                        <span style="font-size:18px;">${total}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
         }
 
-        function changeCount(id, location, delta) {
-            const item = items.find(i => i.id === id)
-            if (!item) return
-            
-            if (location === 'home') {
-                item.home = Math.max(0, item.home + delta)
-            } else {
-                item.hall = Math.max(0, item.hall + delta)
-            }
-            
-            saveItems()
-            renderItems()
-            
-            // Quick feedback toast only on decrease to zero
-            if (delta === -1 && ((location === 'home' && item.home === 0) || (location === 'hall' && item.hall === 0))) {
-                showToast('Minimum reached (0)', 'info-circle', 1200)
-            }
-        }
+        window.changeCount = function(id, loc, delta) {
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+            if (loc === 'home') item.home = Math.max(0, item.home + delta);
+            else item.hall = Math.max(0, item.hall + delta);
+            saveItems();
+            renderItems();
+        };
 
-        function addItem() {
-            const input = document.getElementById('item-input')
-            const name = input.value.trim()
-            
-            if (!name) {
-                showToast('Please enter an item name', 'exclamation', 1800)
-                input.focus()
-                return
+        window.addItem = function() {
+            const input = document.getElementById('item-input');
+            const name = input.value.trim();
+            if (!name) return showToast('Type an item name');
+            if (items.some(i => i.name.toLowerCase() === name.toLowerCase())) {
+                return showToast('Already exists');
             }
-            
-            // Check for duplicate
-            if (items.some(item => item.name.toLowerCase() === name.toLowerCase())) {
-                showToast('Item already exists', 'exclamation', 1800)
-                return
-            }
-            
             items.unshift({
-                id: Date.now().toString(36),
+                id: Date.now().toString(36) + Math.random().toString(36).substr(2),
                 name: name,
                 home: 0,
                 hall: 0
-            })
-            
-            saveItems()
-            renderItems()
-            
-            input.value = ''
-            showToast(`Added "${name}"`, 'plus', 1400)
-            input.focus()
-        }
+            });
+            saveItems();
+            renderItems();
+            input.value = '';
+            showToast('✅ Added');
+        };
 
-        function deleteItem(id) {
-            if (!confirm('Delete this item and all its counts?')) return
-            
-            const item = items.find(i => i.id === id)
-            const name = item ? item.name : ''
-            
-            items = items.filter(i => i.id !== id)
-            saveItems()
-            renderItems()
-            
-            showToast(`Deleted ${name}`, 'trash', 1600)
-        }
+        window.deleteItem = function(id) {
+            if (!confirm('Delete this item and all counts?')) return;
+            items = items.filter(i => i.id !== id);
+            saveItems();
+            renderItems();
+            showToast('🗑️ Deleted');
+        };
 
-        function renameItem(id) {
-            const item = items.find(i => i.id === id)
-            if (!item) return
-            
-            const newName = prompt('New name for this item:', item.name)
-            if (!newName || newName.trim() === item.name) return
-            
-            const trimmed = newName.trim()
-            
-            // Check duplicate after rename
-            if (items.some(i => i.id !== id && i.name.toLowerCase() === trimmed.toLowerCase())) {
-                showToast('Name already exists', 'exclamation')
-                return
-            }
-            
-            item.name = trimmed
-            saveItems()
-            renderItems()
-            showToast('Name updated', 'edit')
-        }
+        window.renameItem = function(id) {
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+            const newName = prompt('New name for this item:', item.name);
+            if (!newName || newName.trim() === item.name) return;
+            item.name = newName.trim();
+            saveItems();
+            renderItems();
+            showToast('✏️ Updated');
+        };
 
-        function clearAll() {
-            if (items.length === 0) return
-            if (!confirm('Delete ALL items and reset everything? This cannot be undone.')) return
-            
-            items = []
-            saveItems()
-            renderItems()
-            showToast('Everything cleared', 'trash')
-        }
+        window.clearAll = function() {
+            if (items.length === 0) return;
+            if (!confirm('Clear EVERYTHING?')) return;
+            items = [];
+            saveItems();
+            renderItems();
+            showToast('🧹 All cleared');
+        };
 
-        // Keyboard shortcuts
-        function handleKeyboard(e) {
-            if (e.metaKey && e.key === 'k') {
-                e.preventDefault()
-                document.getElementById('item-input').focus()
-            }
-        }
+        // Initialize
+        window.onload = function() {
+            loadItems();
+            renderItems();
 
-        // Initialize app
-        function initialize() {
-            initTailwind()
-            loadItems()
-            renderItems()
-            
-            // Focus input on load
-            setTimeout(() => {
-                document.getElementById('item-input').focus()
-            }, 600)
-            
-            // Keyboard support
-            document.addEventListener('keydown', handleKeyboard)
-            
-            // Demo data if empty
+            // Demo data only on first launch
             if (items.length === 0) {
-                setTimeout(() => {
-                    if (items.length === 0) {
-                        items = [
-                            {
-                                id: "demo1",
-                                name: "T-Shirts",
-                                home: 12,
-                                hall: 3
-                            },
-                            {
-                                id: "demo2",
-                                name: "Sneakers",
-                                home: 5,
-                                hall: 8
-                            }
-                        ]
-                        saveItems()
-                        renderItems()
-                    }
-                }, 800)
+                items = [
+                    {id: 'd1', name: 'T-Shirts', home: 14, hall: 3},
+                    {id: 'd2', name: 'Sneakers', home: 6, hall: 9}
+                ];
+                saveItems();
+                renderItems();
             }
-        }
 
-        // Start the app
-        window.onload = initialize
+            // Auto-focus input
+            setTimeout(() => {
+                document.getElementById('item-input').focus();
+            }, 400);
+        };
     </script>
 </body>
 </html>
