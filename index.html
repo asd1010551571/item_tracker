@@ -1,484 +1,399 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Item Tracker</title>
-    <style>
-        :root {
-            --bg: #09090b;
-            --card: #18181b;
-        }
-        * { box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
-            color: #f4f4f5;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .container {
-            max-width: 640px;
-            margin: 0 auto;
-            padding: 12px 10px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 6px 18px;
-            position: sticky;
-            top: 0;
-            background: var(--bg);
-            z-index: 10;
-        }
-        .header h1 { font-size: 27px; font-weight: 700; margin: 0; letter-spacing: -0.5px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Item Tracker</title>
 
-        .add-bar {
-            background: #27272a;
-            border-radius: 9999px;
-            padding: 5px;
-            display: flex;
-            margin-bottom: 18px;
-        }
-        #item-input {
-            background: transparent;
-            border: none;
-            padding: 15px 18px;
-            color: white;
-            font-size: 17px;
-            flex: 1;
-            outline: none;
-        }
-        .add-btn {
-            background: white;
-            color: black;
-            font-weight: 700;
-            padding: 0 26px;
-            border-radius: 9999px;
-            font-size: 16px;
-        }
+<style>
+:root {
+    --bg: #09090b;
+    --card: #18181b;
+}
+* { box-sizing: border-box; }
 
-        .card {
-            background: var(--card);
-            border-radius: 18px;
-            overflow: hidden;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.35);
-        }
-        .item-header {
-            padding: 13px 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 18px;
-            font-weight: 600;
-            background: #111113;
-        }
-        .reorder-controls {
-            display: flex;
-            gap: 8px;
-        }
-        .reorder-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 9999px;
-            border: none;
-            background: #27272a;
-            color: #d4d4d8;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            line-height: 1;
-        }
-        .reorder-btn:disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-        }
-        .section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-        }
-        .location {
-            padding: 13px 12px;
-            text-align: center;
-            border-top: 1px solid #27272a;
-        }
-        .location-label {
-            font-size: 11.5px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            margin-bottom: 3px;
-            color: #a1a1aa;
-        }
-        .count {
-            font-size: 37px;
-            font-weight: 700;
-            line-height: 1;
-            margin: 4px 0 10px;
-            cursor: pointer;
-            user-select: none;
-        }
-        .count:active { opacity: 0.6; }
-        .btn-row {
-            display: flex;
-            justify-content: center;
-            gap: 18px;
-        }
-        .btn {
-            width: 58px;
-            height: 58px;
-            font-size: 32px;
-            border-radius: 9999px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn:active { transform: scale(0.9); }
-        .btn-minus { background: #27272a; color: #ddd; }
-        .btn-plus-home { background: #10b981; color: white; }
-        .btn-plus-hall { background: #0ea5e9; color: white; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: #f4f4f5;
+    margin: 0;
+}
 
-        .total-bar {
-            padding: 10px 16px;
-            font-size: 14.5px;
-            display: flex;
-            justify-content: space-between;
-            background: #111113;
-            font-weight: 500;
-        }
-        .toast {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #27272a;
-            color: white;
-            padding: 13px 24px;
-            border-radius: 9999px;
-            font-size: 15.5px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 100;
-        }
-        .empty {
-            text-align: center;
-            padding: 90px 20px;
-            color: #71717a;
-        }
+.container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 10px 8px;
+}
 
-        .number-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.65);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 150;
-            padding: 16px;
-        }
-        .number-modal.show { display: flex; }
-        .number-sheet {
-            width: 100%;
-            max-width: 360px;
-            background: #18181b;
-            border-radius: 16px;
-            padding: 18px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.45);
-        }
-        .number-sheet h3 { margin: 0 0 12px; font-size: 17px; }
-        #quantity-input {
-            width: 100%;
-            background: #27272a;
-            color: #fff;
-            border: 1px solid #3f3f46;
-            border-radius: 12px;
-            padding: 12px;
-            font-size: 24px;
-            text-align: center;
-            outline: none;
-        }
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 14px;
-        }
-        .modal-btn {
-            border: none;
-            border-radius: 12px;
-            padding: 11px 14px;
-            font-size: 15px;
-            font-weight: 600;
-            flex: 1;
-        }
-        .modal-btn.cancel { background: #3f3f46; color: #fff; }
-        .modal-btn.save { background: #10b981; color: #fff; }
-    </style>
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 4px 14px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+}
+
+.header h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+/* ADD BAR */
+.add-bar {
+    background: #27272a;
+    border-radius: 9999px;
+    padding: 4px;
+    display: flex;
+    margin-bottom: 14px;
+}
+
+#item-input {
+    background: transparent;
+    border: none;
+    padding: 10px 14px;
+    color: white;
+    font-size: 16px;
+    flex: 1;
+    outline: none;
+}
+
+.add-btn {
+    background: white;
+    color: black;
+    font-weight: 700;
+    padding: 0 18px;
+    border-radius: 9999px;
+    font-size: 14px;
+    border: none;
+}
+
+/* CARD */
+.card {
+    background: var(--card);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.35);
+}
+
+/* ITEM HEADER */
+.item-header {
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    background: #111113;
+}
+
+.item-name {
+    flex: 1;
+    cursor: pointer;
+}
+
+.item-header button {
+    background: none;
+    border: none;
+    color: #a1a1aa;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* SECTION */
+.section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.location {
+    padding: 8px 6px;
+    text-align: center;
+    border-top: 1px solid #27272a;
+}
+
+.location:first-child {
+    border-right: 1px solid #27272a;
+}
+
+.location-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #a1a1aa;
+    margin-bottom: 2px;
+}
+
+/* COUNT INPUT */
+.count-input {
+    width: 60px;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    margin: 2px 0 4px;
+}
+
+.count-input::-webkit-outer-spin-button,
+.count-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* BUTTONS */
+.btn-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn {
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+}
+
+.btn-minus { background: #27272a; color: #ddd; }
+.btn-plus-home { background: #10b981; color: white; }
+.btn-plus-hall { background: #0ea5e9; color: white; }
+
+/* TOTAL */
+.total-bar {
+    padding: 6px 12px;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    background: #111113;
+}
+
+/* EMPTY */
+.empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #71717a;
+}
+
+/* TOAST */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #27272a;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 9999px;
+    font-size: 14px;
+    opacity: 0;
+    transition: 0.3s;
+}
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="header">
-            <div>
-                <h1>Item Tracker</h1>
+
+<div class="container">
+
+<div class="header">
+    <h1>Item Tracker</h1>
+    <button onclick="clearAll()" style="color:#ef4444;font-size:20px;">🗑️</button>
+</div>
+
+<div class="add-bar">
+    <input id="item-input" type="text" placeholder="New item..."
+           onkeypress="if(event.key==='Enter') addItem()">
+    <button onclick="addItem()" class="add-btn">ADD</button>
+</div>
+
+<div id="items-list"></div>
+
+<div id="empty-state" class="empty" style="display:none;">
+    <div style="font-size:60px;">📦</div>
+    <h3>No items yet</h3>
+</div>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+
+let items = [];
+const STORAGE_KEY = 'iphoneItemTracker2026_v4';
+
+function loadItems() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) items = JSON.parse(saved);
+}
+
+function saveItems() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.opacity = 1;
+    setTimeout(()=> t.style.opacity = 0, 1500);
+}
+
+function renderItems() {
+    const container = document.getElementById('items-list');
+    const empty = document.getElementById('empty-state');
+    container.innerHTML = '';
+
+    if (items.length === 0) {
+        empty.style.display = 'block';
+        return;
+    }
+    empty.style.display = 'none';
+
+    items.forEach((item) => {
+
+        const total = item.home + item.hall;
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        card.innerHTML = `
+            <div class="item-header">
+                <span class="item-name" onclick="renameItem('${item.id}')">${item.name}</span>
+                <button onclick="moveUp('${item.id}')">▲</button>
+                <button onclick="moveDown('${item.id}')">▼</button>
+                <button onclick="deleteItem('${item.id}')" style="color:#ef4444;">🗑️</button>
             </div>
-            <button onclick="clearAll()" style="background:none;border:none;font-size:24px;color:#ef4444;">🗑️</button>
-        </div>
 
-        <div class="add-bar">
-            <input id="item-input" type="text" placeholder="New item name..."
-                   onkeypress="if(event.key==='Enter') addItem()">
-            <button onclick="addItem()" class="add-btn">ADD</button>
-        </div>
+            <div class="section">
+                <div class="location">
+                    <div class="location-label">HOME</div>
+                    <input type="number" min="0" inputmode="numeric"
+                        value="${item.home}"
+                        onchange="setCount('${item.id}','home',this.value)"
+                        class="count-input">
+                    <div class="btn-row">
+                        <button onclick="changeCount('${item.id}','home',-1)" class="btn btn-minus">−</button>
+                        <button onclick="changeCount('${item.id}','home',1)" class="btn btn-plus-home">+</button>
+                    </div>
+                </div>
 
-        <div id="items-list"></div>
-
-        <div id="empty-state" class="empty" style="display:none;">
-            <div style="font-size:80px;margin-bottom:12px;">📦</div>
-            <h3>No items yet</h3>
-        </div>
-    </div>
-
-    <div id="toast" class="toast"></div>
-
-    <div id="number-modal" class="number-modal" role="dialog" aria-modal="true">
-        <div class="number-sheet">
-            <h3 id="number-modal-title">Set quantity</h3>
-            <input
-                id="quantity-input"
-                type="number"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                min="0"
-                step="1"
-                autocomplete="off"
-            >
-            <div class="modal-actions">
-                <button class="modal-btn cancel" onclick="closeNumberModal()">Cancel</button>
-                <button class="modal-btn save" onclick="saveNumberModal()">Save</button>
+                <div class="location">
+                    <div class="location-label">HALL</div>
+                    <input type="number" min="0" inputmode="numeric"
+                        value="${item.hall}"
+                        onchange="setCount('${item.id}','hall',this.value)"
+                        class="count-input">
+                    <div class="btn-row">
+                        <button onclick="changeCount('${item.id}','hall',-1)" class="btn btn-minus">−</button>
+                        <button onclick="changeCount('${item.id}','hall',1)" class="btn btn-plus-hall">+</button>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <script>
-        let items = [];
-        const STORAGE_KEY = 'iphoneItemTracker2026_v2';
-        let modalContext = null;
+            <div class="total-bar">
+                <span>Total</span>
+                <span>${total}</span>
+            </div>
+        `;
 
-        function loadItems() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) items = JSON.parse(saved);
-        }
+        container.appendChild(card);
+    });
+}
 
-        function saveItems() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-        }
+function moveUp(id){
+    const i = items.findIndex(x=>x.id===id);
+    if(i<=0) return;
+    [items[i-1],items[i]]=[items[i],items[i-1]];
+    saveItems();
+    renderItems();
+}
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.style.opacity = '1';
-            setTimeout(() => toast.style.opacity = '0', 2000);
-        }
+function moveDown(id){
+    const i = items.findIndex(x=>x.id===id);
+    if(i===-1 || i===items.length-1) return;
+    [items[i+1],items[i]]=[items[i],items[i+1]];
+    saveItems();
+    renderItems();
+}
 
-        function renderItems() {
-            const container = document.getElementById('items-list');
-            const empty = document.getElementById('empty-state');
-            container.innerHTML = '';
+function changeCount(id,loc,delta){
+    const item = items.find(i=>i.id===id);
+    if(!item) return;
+    if(loc==='home') item.home=Math.max(0,item.home+delta);
+    else item.hall=Math.max(0,item.hall+delta);
+    saveItems();
+    renderItems();
+}
 
-            if (items.length === 0) {
-                empty.style.display = 'block';
-                return;
-            }
-            empty.style.display = 'none';
+function setCount(id,loc,value){
+    const item = items.find(i=>i.id===id);
+    if(!item) return;
+    const num=parseInt(value);
+    if(isNaN(num)||num<0) return;
+    if(loc==='home') item.home=num;
+    else item.hall=num;
+    saveItems();
+    renderItems();
+}
 
-            items.forEach((item, index) => {
-                const total = item.home + item.hall;
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.dataset.id = item.id;
+function renameItem(id){
+    const item = items.find(i=>i.id===id);
+    if(!item) return;
+    const newName = prompt('Edit item name:', item.name);
+    if(!newName || newName.trim()==='') return;
+    item.name = newName.trim();
+    saveItems();
+    renderItems();
+}
 
-                card.innerHTML = `
-                    <div class="item-header">
-                        <div class="reorder-controls" aria-label="Reorder item">
-                            <button class="reorder-btn" onclick="moveItem('${item.id}', -1)" ${index === 0 ? 'disabled' : ''} aria-label="Move item up">↑</button>
-                            <button class="reorder-btn" onclick="moveItem('${item.id}', 1)" ${index === items.length - 1 ? 'disabled' : ''} aria-label="Move item down">↓</button>
-                        </div>
-                        <span onclick="renameItem('${item.id}')" style="flex:1;cursor:pointer;">${item.name}</span>
-                        <span onclick="deleteItem('${item.id}')" style="font-size:21px;color:#ef4444;cursor:pointer;">🗑️</span>
-                    </div>
-                    <div class="section">
-                        <div class="location" style="border-right:1px solid #27272a;">
-                            <div class="location-label">🏠 HOME</div>
-                            <div class="count" style="color:#34d399;" onclick="editCount('${item.id}', 'home')">${item.home}</div>
-                            <div class="btn-row">
-                                <button onclick="changeCount('${item.id}','home',-1)" class="btn btn-minus">−</button>
-                                <button onclick="changeCount('${item.id}','home',1)" class="btn btn-plus-home">+</button>
-                            </div>
-                        </div>
-                        <div class="location">
-                            <div class="location-label">🚪 HALL</div>
-                            <div class="count" style="color:#38bdf8;" onclick="editCount('${item.id}', 'hall')">${item.hall}</div>
-                            <div class="btn-row">
-                                <button onclick="changeCount('${item.id}','hall',-1)" class="btn btn-minus">−</button>
-                                <button onclick="changeCount('${item.id}','hall',1)" class="btn btn-plus-hall">+</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="total-bar">
-                        <span>Total</span>
-                        <span>${total}</span>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
+function addItem(){
+    const input=document.getElementById('item-input');
+    const name=input.value.trim();
+    if(!name) return;
+    if(items.some(i=>i.name.toLowerCase()===name.toLowerCase())){
+        showToast('Item exists');
+        return;
+    }
+    items.unshift({
+        id:Date.now().toString(36),
+        name,
+        home:0,
+        hall:0
+    });
+    input.value='';
+    saveItems();
+    renderItems();
+}
 
-        window.moveItem = function(id, direction) {
-            const index = items.findIndex(i => i.id === id);
-            if (index === -1) return;
+function deleteItem(id){
+    if(!confirm('Delete item?')) return;
+    items=items.filter(i=>i.id!==id);
+    saveItems();
+    renderItems();
+}
 
-            const targetIndex = index + direction;
-            if (targetIndex < 0 || targetIndex >= items.length) return;
+function clearAll(){
+    if(!confirm('Clear all items?')) return;
+    items=[];
+    saveItems();
+    renderItems();
+}
 
-            [items[index], items[targetIndex]] = [items[targetIndex], items[index]];
-            saveItems();
-            renderItems();
-            showToast('✓ Order updated');
-        };
+window.onload=()=>{
+    loadItems();
+    renderItems();
+};
 
-        window.changeCount = function(id, loc, delta) {
-            const item = items.find(i => i.id === id);
-            if (!item) return;
-            if (loc === 'home') item.home = Math.max(0, item.home + delta);
-            else item.hall = Math.max(0, item.hall + delta);
-            saveItems();
-            renderItems();
-        };
+</script>
 
-        window.editCount = function(id, loc) {
-            const item = items.find(i => i.id === id);
-            if (!item) return;
-
-            const current = loc === 'home' ? item.home : item.hall;
-            openNumberModal(id, loc, current, item.name);
-        };
-
-        window.openNumberModal = function(id, loc, value, itemName) {
-            modalContext = { id, loc };
-            const modal = document.getElementById('number-modal');
-            const title = document.getElementById('number-modal-title');
-            const input = document.getElementById('quantity-input');
-            title.textContent = `Set ${loc.toUpperCase()} quantity for "${itemName}"`;
-            input.value = value;
-            modal.classList.add('show');
-            setTimeout(() => {
-                input.focus();
-                input.select();
-            }, 0);
-        };
-
-        window.closeNumberModal = function() {
-            modalContext = null;
-            document.getElementById('number-modal').classList.remove('show');
-        };
-
-        window.saveNumberModal = function() {
-            if (!modalContext) return;
-
-            const input = document.getElementById('quantity-input');
-            const raw = input.value.trim();
-            const num = Number(raw);
-
-            if (!Number.isInteger(num) || num < 0) {
-                showToast('Please enter a valid number');
-                return;
-            }
-
-            const item = items.find(i => i.id === modalContext.id);
-            if (!item) return closeNumberModal();
-
-            if (modalContext.loc === 'home') item.home = num;
-            else item.hall = num;
-
-            saveItems();
-            renderItems();
-            closeNumberModal();
-            showToast('✓ Updated');
-        };
-
-        document.getElementById('quantity-input').addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') saveNumberModal();
-        });
-
-        document.getElementById('number-modal').addEventListener('click', (event) => {
-            if (event.target.id === 'number-modal') closeNumberModal();
-        });
-
-        window.addItem = function() {
-            const input = document.getElementById('item-input');
-            const name = input.value.trim();
-            if (!name) return showToast('Enter item name');
-            if (items.some(i => i.name.toLowerCase() === name.toLowerCase())) {
-                return showToast('Item already exists');
-            }
-            items.unshift({
-                id: Date.now().toString(36),
-                name: name,
-                home: 0,
-                hall: 0
-            });
-            saveItems();
-            renderItems();
-            input.value = '';
-            showToast('✅ Added');
-        };
-
-        window.deleteItem = function(id) {
-            if (!confirm('Delete this item?')) return;
-            items = items.filter(i => i.id !== id);
-            saveItems();
-            renderItems();
-        };
-
-        window.renameItem = function(id) {
-            const item = items.find(i => i.id === id);
-            if (!item) return;
-            const newName = prompt('New name:', item.name);
-            if (!newName || newName.trim() === item.name) return;
-            item.name = newName.trim();
-            saveItems();
-            renderItems();
-        };
-
-        window.clearAll = function() {
-            if (!confirm('Clear all items?')) return;
-            items = [];
-            saveItems();
-            renderItems();
-            showToast('Everything cleared');
-        };
-
-        window.onload = () => {
-            loadItems();
-            renderItems();
-
-            if (items.length === 0) {
-                items = [
-                    {id: 'd1', name: 'T-Shirts', home: 14, hall: 3},
-                    {id: 'd2', name: 'Sneakers', home: 6, hall: 9}
-                ];
-                saveItems();
-                renderItems();
-            }
-        };
-    </script>
 </body>
 </html>
