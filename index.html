@@ -25,7 +25,7 @@ body {
 .container {
     max-width: 640px;
     margin: 0 auto;
-    padding: 10px 8px;
+    padding: 8px;
 }
 
 /* HEADER */
@@ -33,15 +33,14 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 4px 14px;
+    padding: 6px 4px 12px;
     position: sticky;
     top: 0;
     background: var(--bg);
-    z-index: 5;
 }
 
 .header h1 {
-    font-size: 22px;
+    font-size: 20px;
     margin: 0;
 }
 
@@ -51,15 +50,15 @@ body {
     border-radius: 9999px;
     padding: 4px;
     display: flex;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 #item-input {
     background: transparent;
     border: none;
-    padding: 10px 14px;
+    padding: 8px 12px;
     color: white;
-    font-size: 16px;
+    font-size: 15px;
     flex: 1;
     outline: none;
 }
@@ -68,28 +67,28 @@ body {
     background: white;
     color: black;
     font-weight: 600;
-    padding: 0 16px;
+    padding: 0 14px;
     border-radius: 9999px;
-    font-size: 14px;
+    font-size: 13px;
     border: none;
 }
 
 /* CARD */
 .card {
     background: var(--card);
-    border-radius: 14px;
+    border-radius: 12px;
     overflow: hidden;
     margin-bottom: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.35);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
 }
 
-/* HEADER ROW */
+/* ITEM HEADER */
 .item-header {
-    padding: 8px 12px;
+    padding: 6px 10px;
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     background: #111113;
 }
@@ -106,24 +105,29 @@ body {
     background: none;
     border: none;
     color: #a1a1aa;
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
 }
 
-/* SECTION - MOBILE FIRST (STACKED) */
+/* FORCE ONE ROW (ALWAYS SIDE BY SIDE) */
 .section {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr);
 }
 
+/* LOCATION */
 .location {
-    padding: 8px 6px;
+    padding: 6px 4px;
     text-align: center;
     border-top: 1px solid #27272a;
 }
 
+.location:first-child {
+    border-right: 1px solid #27272a;
+}
+
 .location-label {
-    font-size: 10px;
+    font-size: 9px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: #a1a1aa;
@@ -133,7 +137,7 @@ body {
 /* NUMBER INPUT */
 .count-input {
     width: 100%;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
     text-align: center;
     background: transparent;
@@ -153,13 +157,13 @@ body {
 .btn-row {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .btn {
-    width: 34px;
-    height: 34px;
-    font-size: 18px;
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
     border-radius: 9999px;
     border: none;
     display: flex;
@@ -172,8 +176,8 @@ body {
 .btn-plus-hall { background: #0ea5e9; color: white; }
 
 .total-bar {
-    padding: 6px 12px;
-    font-size: 13px;
+    padding: 4px 10px;
+    font-size: 12px;
     display: flex;
     justify-content: space-between;
     background: #111113;
@@ -181,25 +185,8 @@ body {
 
 .empty {
     text-align: center;
-    padding: 60px 20px;
+    padding: 50px 20px;
     color: #71717a;
-}
-
-/* DESKTOP / LANDSCAPE MODE */
-@media (min-width: 500px) {
-    .section {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .location:first-child {
-        border-right: 1px solid #27272a;
-    }
-
-    .count-input {
-        width: auto;
-        min-width: 60px;
-    }
 }
 </style>
 </head>
@@ -209,7 +196,7 @@ body {
 
 <div class="header">
     <h1>Item Tracker</h1>
-    <button onclick="clearAll()" style="color:#ef4444;font-size:18px;">🗑️</button>
+    <button onclick="clearAll()" style="color:#ef4444;font-size:16px;">🗑️</button>
 </div>
 
 <div class="add-bar">
@@ -221,16 +208,15 @@ body {
 <div id="items-list"></div>
 
 <div id="empty-state" class="empty" style="display:none;">
-    <div style="font-size:50px;">📦</div>
+    <div style="font-size:45px;">📦</div>
     <h3>No items yet</h3>
 </div>
 
 </div>
 
 <script>
-
 let items = [];
-const STORAGE_KEY = 'iphoneItemTracker2026_v6';
+const STORAGE_KEY = 'iphoneItemTracker2026_v7';
 
 function loadItems() {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -379,7 +365,6 @@ window.onload=()=>{
     loadItems();
     renderItems();
 };
-
 </script>
 </body>
 </html>
