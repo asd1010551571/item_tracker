@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Item Tracker</title>
 
 <style>
@@ -10,6 +11,7 @@
     --bg: #09090b;
     --card: #18181b;
 }
+
 * { box-sizing: border-box; }
 
 body {
@@ -17,6 +19,7 @@ body {
     background: var(--bg);
     color: #f4f4f5;
     margin: 0;
+    -webkit-font-smoothing: antialiased;
 }
 
 .container {
@@ -34,10 +37,11 @@ body {
     position: sticky;
     top: 0;
     background: var(--bg);
+    z-index: 5;
 }
 
 .header h1 {
-    font-size: 24px;
+    font-size: 22px;
     margin: 0;
 }
 
@@ -63,8 +67,8 @@ body {
 .add-btn {
     background: white;
     color: black;
-    font-weight: 700;
-    padding: 0 18px;
+    font-weight: 600;
+    padding: 0 16px;
     border-radius: 9999px;
     font-size: 14px;
     border: none;
@@ -79,12 +83,12 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.35);
 }
 
-/* ITEM HEADER */
+/* HEADER ROW */
 .item-header {
     padding: 8px 12px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     font-size: 15px;
     font-weight: 600;
     background: #111113;
@@ -93,6 +97,9 @@ body {
 .item-name {
     flex: 1;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .item-header button {
@@ -127,10 +134,12 @@ body {
     margin-bottom: 2px;
 }
 
-/* COUNT INPUT */
+/* NUMBER INPUT – AUTO WIDTH */
 .count-input {
-    width: 60px;
-    font-size: 22px;
+    min-width: 40px;
+    max-width: 100%;
+    width: auto;
+    font-size: 20px;
     font-weight: 700;
     text-align: center;
     background: transparent;
@@ -150,25 +159,24 @@ body {
 .btn-row {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .btn {
-    width: 38px;
-    height: 38px;
-    font-size: 20px;
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
     border-radius: 9999px;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: none;
 }
 
 .btn-minus { background: #27272a; color: #ddd; }
 .btn-plus-home { background: #10b981; color: white; }
 .btn-plus-hall { background: #0ea5e9; color: white; }
 
-/* TOTAL */
 .total-bar {
     padding: 6px 12px;
     font-size: 13px;
@@ -177,37 +185,20 @@ body {
     background: #111113;
 }
 
-/* EMPTY */
 .empty {
     text-align: center;
     padding: 60px 20px;
     color: #71717a;
 }
-
-/* TOAST */
-.toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #27272a;
-    color: white;
-    padding: 10px 18px;
-    border-radius: 9999px;
-    font-size: 14px;
-    opacity: 0;
-    transition: 0.3s;
-}
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
 <div class="header">
     <h1>Item Tracker</h1>
-    <button onclick="clearAll()" style="color:#ef4444;font-size:20px;">🗑️</button>
+    <button onclick="clearAll()" style="color:#ef4444;font-size:18px;">🗑️</button>
 </div>
 
 <div class="add-bar">
@@ -219,18 +210,16 @@ body {
 <div id="items-list"></div>
 
 <div id="empty-state" class="empty" style="display:none;">
-    <div style="font-size:60px;">📦</div>
+    <div style="font-size:50px;">📦</div>
     <h3>No items yet</h3>
 </div>
 
 </div>
 
-<div id="toast" class="toast"></div>
-
 <script>
 
 let items = [];
-const STORAGE_KEY = 'iphoneItemTracker2026_v4';
+const STORAGE_KEY = 'iphoneItemTracker2026_v5';
 
 function loadItems() {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -241,11 +230,10 @@ function saveItems() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 }
 
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.style.opacity = 1;
-    setTimeout(()=> t.style.opacity = 0, 1500);
+/* Efficient partial update */
+function updateTotal(card, item) {
+    const total = item.home + item.hall;
+    card.querySelector('.total-value').textContent = total;
 }
 
 function renderItems() {
@@ -259,9 +247,8 @@ function renderItems() {
     }
     empty.style.display = 'none';
 
-    items.forEach((item) => {
+    items.forEach(item => {
 
-        const total = item.home + item.hall;
         const card = document.createElement('div');
         card.className = 'card';
 
@@ -276,10 +263,10 @@ function renderItems() {
             <div class="section">
                 <div class="location">
                     <div class="location-label">HOME</div>
-                    <input type="number" min="0" inputmode="numeric"
+                    <input type="number" inputmode="numeric" min="0"
                         value="${item.home}"
-                        onchange="setCount('${item.id}','home',this.value)"
-                        class="count-input">
+                        class="count-input"
+                        oninput="setCount('${item.id}','home',this, this.value)">
                     <div class="btn-row">
                         <button onclick="changeCount('${item.id}','home',-1)" class="btn btn-minus">−</button>
                         <button onclick="changeCount('${item.id}','home',1)" class="btn btn-plus-home">+</button>
@@ -288,10 +275,10 @@ function renderItems() {
 
                 <div class="location">
                     <div class="location-label">HALL</div>
-                    <input type="number" min="0" inputmode="numeric"
+                    <input type="number" inputmode="numeric" min="0"
                         value="${item.hall}"
-                        onchange="setCount('${item.id}','hall',this.value)"
-                        class="count-input">
+                        class="count-input"
+                        oninput="setCount('${item.id}','hall',this, this.value)">
                     <div class="btn-row">
                         <button onclick="changeCount('${item.id}','hall',-1)" class="btn btn-minus">−</button>
                         <button onclick="changeCount('${item.id}','hall',1)" class="btn btn-plus-hall">+</button>
@@ -301,7 +288,7 @@ function renderItems() {
 
             <div class="total-bar">
                 <span>Total</span>
-                <span>${total}</span>
+                <span class="total-value">${item.home + item.hall}</span>
             </div>
         `;
 
@@ -309,6 +296,7 @@ function renderItems() {
     });
 }
 
+/* Reordering */
 function moveUp(id){
     const i = items.findIndex(x=>x.id===id);
     if(i<=0) return;
@@ -325,6 +313,7 @@ function moveDown(id){
     renderItems();
 }
 
+/* Count updates – no full re-render */
 function changeCount(id,loc,delta){
     const item = items.find(i=>i.id===id);
     if(!item) return;
@@ -334,7 +323,7 @@ function changeCount(id,loc,delta){
     renderItems();
 }
 
-function setCount(id,loc,value){
+function setCount(id,loc,input,value){
     const item = items.find(i=>i.id===id);
     if(!item) return;
     const num=parseInt(value);
@@ -342,27 +331,26 @@ function setCount(id,loc,value){
     if(loc==='home') item.home=num;
     else item.hall=num;
     saveItems();
-    renderItems();
+    const card = input.closest('.card');
+    updateTotal(card, item);
 }
 
+/* Rename */
 function renameItem(id){
     const item = items.find(i=>i.id===id);
     if(!item) return;
     const newName = prompt('Edit item name:', item.name);
-    if(!newName || newName.trim()==='') return;
+    if(!newName || !newName.trim()) return;
     item.name = newName.trim();
     saveItems();
     renderItems();
 }
 
+/* Add/Delete */
 function addItem(){
     const input=document.getElementById('item-input');
     const name=input.value.trim();
     if(!name) return;
-    if(items.some(i=>i.name.toLowerCase()===name.toLowerCase())){
-        showToast('Item exists');
-        return;
-    }
     items.unshift({
         id:Date.now().toString(36),
         name,
@@ -394,6 +382,5 @@ window.onload=()=>{
 };
 
 </script>
-
 </body>
 </html>
