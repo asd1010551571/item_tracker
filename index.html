@@ -110,20 +110,16 @@ body {
     cursor: pointer;
 }
 
-/* SECTION */
+/* SECTION - MOBILE FIRST (STACKED) */
 .section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
 }
 
 .location {
     padding: 8px 6px;
     text-align: center;
     border-top: 1px solid #27272a;
-}
-
-.location:first-child {
-    border-right: 1px solid #27272a;
 }
 
 .location-label {
@@ -134,11 +130,9 @@ body {
     margin-bottom: 2px;
 }
 
-/* NUMBER INPUT – AUTO WIDTH */
+/* NUMBER INPUT */
 .count-input {
-    min-width: 40px;
-    max-width: 100%;
-    width: auto;
+    width: 100%;
     font-size: 20px;
     font-weight: 700;
     text-align: center;
@@ -190,6 +184,23 @@ body {
     padding: 60px 20px;
     color: #71717a;
 }
+
+/* DESKTOP / LANDSCAPE MODE */
+@media (min-width: 500px) {
+    .section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .location:first-child {
+        border-right: 1px solid #27272a;
+    }
+
+    .count-input {
+        width: auto;
+        min-width: 60px;
+    }
+}
 </style>
 </head>
 
@@ -219,7 +230,7 @@ body {
 <script>
 
 let items = [];
-const STORAGE_KEY = 'iphoneItemTracker2026_v5';
+const STORAGE_KEY = 'iphoneItemTracker2026_v6';
 
 function loadItems() {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -228,12 +239,6 @@ function loadItems() {
 
 function saveItems() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-}
-
-/* Efficient partial update */
-function updateTotal(card, item) {
-    const total = item.home + item.hall;
-    card.querySelector('.total-value').textContent = total;
 }
 
 function renderItems() {
@@ -266,7 +271,7 @@ function renderItems() {
                     <input type="number" inputmode="numeric" min="0"
                         value="${item.home}"
                         class="count-input"
-                        oninput="setCount('${item.id}','home',this, this.value)">
+                        oninput="setCount('${item.id}','home',this.value)">
                     <div class="btn-row">
                         <button onclick="changeCount('${item.id}','home',-1)" class="btn btn-minus">−</button>
                         <button onclick="changeCount('${item.id}','home',1)" class="btn btn-plus-home">+</button>
@@ -278,7 +283,7 @@ function renderItems() {
                     <input type="number" inputmode="numeric" min="0"
                         value="${item.hall}"
                         class="count-input"
-                        oninput="setCount('${item.id}','hall',this, this.value)">
+                        oninput="setCount('${item.id}','hall',this.value)">
                     <div class="btn-row">
                         <button onclick="changeCount('${item.id}','hall',-1)" class="btn btn-minus">−</button>
                         <button onclick="changeCount('${item.id}','hall',1)" class="btn btn-plus-hall">+</button>
@@ -288,7 +293,7 @@ function renderItems() {
 
             <div class="total-bar">
                 <span>Total</span>
-                <span class="total-value">${item.home + item.hall}</span>
+                <span>${item.home + item.hall}</span>
             </div>
         `;
 
@@ -296,7 +301,6 @@ function renderItems() {
     });
 }
 
-/* Reordering */
 function moveUp(id){
     const i = items.findIndex(x=>x.id===id);
     if(i<=0) return;
@@ -313,7 +317,6 @@ function moveDown(id){
     renderItems();
 }
 
-/* Count updates – no full re-render */
 function changeCount(id,loc,delta){
     const item = items.find(i=>i.id===id);
     if(!item) return;
@@ -323,7 +326,7 @@ function changeCount(id,loc,delta){
     renderItems();
 }
 
-function setCount(id,loc,input,value){
+function setCount(id,loc,value){
     const item = items.find(i=>i.id===id);
     if(!item) return;
     const num=parseInt(value);
@@ -331,11 +334,8 @@ function setCount(id,loc,input,value){
     if(loc==='home') item.home=num;
     else item.hall=num;
     saveItems();
-    const card = input.closest('.card');
-    updateTotal(card, item);
 }
 
-/* Rename */
 function renameItem(id){
     const item = items.find(i=>i.id===id);
     if(!item) return;
@@ -346,7 +346,6 @@ function renameItem(id){
     renderItems();
 }
 
-/* Add/Delete */
 function addItem(){
     const input=document.getElementById('item-input');
     const name=input.value.trim();
