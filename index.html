@@ -69,10 +69,6 @@
             overflow: hidden;
             margin-bottom: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.35);
-            touch-action: none;
-        }
-        .card.is-dragging {
-            opacity: 0.25;
         }
         .item-header {
             padding: 13px 16px;
@@ -83,15 +79,28 @@
             font-weight: 600;
             background: #111113;
         }
-        .drag-handle {
-            cursor: grab;
-            font-size: 22px;
-            color: #52525b;
-            padding: 0 8px;
-            touch-action: none;
-            user-select: none;
+        .reorder-controls {
+            display: flex;
+            gap: 8px;
         }
-        .drag-handle:active { cursor: grabbing; }
+        .reorder-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 9999px;
+            border: none;
+            background: #27272a;
+            color: #d4d4d8;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .reorder-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
         .section {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -262,7 +271,6 @@
         let items = [];
         const STORAGE_KEY = 'iphoneItemTracker2026_v2';
         let modalContext = null;
-        let dragging = null;
 
         function loadItems() {
             const saved = localStorage.getItem(STORAGE_KEY);
@@ -291,7 +299,7 @@
             }
             empty.style.display = 'none';
 
-            items.forEach((item) => {
+            items.forEach((item, index) => {
                 const total = item.home + item.hall;
                 const card = document.createElement('div');
                 card.className = 'card';
@@ -299,7 +307,10 @@
 
                 card.innerHTML = `
                     <div class="item-header">
-                        <span class="drag-handle" data-drag-handle="${item.id}" aria-label="Reorder item">≡</span>
+                        <div class="reorder-controls" aria-label="Reorder item">
+                            <button class="reorder-btn" onclick="moveItem('${item.id}', -1)" ${index === 0 ? 'disabled' : ''} aria-label="Move item up">↑</button>
+                            <button class="reorder-btn" onclick="moveItem('${item.id}', 1)" ${index === items.length - 1 ? 'disabled' : ''} aria-label="Move item down">↓</button>
+                        </div>
                         <span onclick="renameItem('${item.id}')" style="flex:1;cursor:pointer;">${item.name}</span>
                         <span onclick="deleteItem('${item.id}')" style="font-size:21px;color:#ef4444;cursor:pointer;">🗑️</span>
                     </div>
@@ -328,96 +339,20 @@
                 `;
                 container.appendChild(card);
             });
-
-            initTouchReorder();
         }
 
-        function reorderItems(draggedId, targetId) {
-            const draggedIndex = items.findIndex(i => i.id === draggedId);
-            const targetIndex = items.findIndex(i => i.id === targetId);
+        window.moveItem = function(id, direction) {
+            const index = items.findIndex(i => i.id === id);
+            if (index === -1) return;
 
-            if (draggedIndex === -1 || targetIndex === -1 || draggedIndex === targetIndex) return;
+            const targetIndex = index + direction;
+            if (targetIndex < 0 || targetIndex >= items.length) return;
 
-            const [movedItem] = items.splice(draggedIndex, 1);
-            items.splice(targetIndex, 0, movedItem);
-
+            [items[index], items[targetIndex]] = [items[targetIndex], items[index]];
             saveItems();
             renderItems();
             showToast('✓ Order updated');
-        }
-
-        function initTouchReorder() {
-            const handles = document.querySelectorAll('.drag-handle');
-            handles.forEach(handle => {
-                handle.onpointerdown = startPointerDrag;
-            });
-        }
-
-        function startPointerDrag(e) {
-            const handle = e.currentTarget;
-            const card = handle.closest('.card');
-            if (!card) return;
-
-            e.preventDefault();
-            handle.setPointerCapture(e.pointerId);
-
-            dragging = {
-                id: card.dataset.id,
-                pointerId: e.pointerId,
-                card,
-                startY: e.clientY,
-                moved: false
-            };
-            card.classList.add('is-dragging');
-
-            handle.onpointermove = onPointerMove;
-            handle.onpointerup = endPointerDrag;
-            handle.onpointercancel = endPointerDrag;
-        }
-
-        function onPointerMove(e) {
-            if (!dragging || e.pointerId !== dragging.pointerId) return;
-            const delta = Math.abs(e.clientY - dragging.startY);
-            if (delta > 4) dragging.moved = true;
-
-            const currentCard = dragging.card;
-            const cards = Array.from(document.querySelectorAll('.card:not(.is-dragging)'));
-            const target = cards.find(c => {
-                const rect = c.getBoundingClientRect();
-                return e.clientY < rect.top + rect.height / 2;
-            });
-
-            const container = document.getElementById('items-list');
-            if (!target) {
-                container.appendChild(currentCard);
-            } else if (target !== currentCard.nextElementSibling) {
-                container.insertBefore(currentCard, target);
-            }
-        }
-
-        function endPointerDrag(e) {
-            if (!dragging || e.pointerId !== dragging.pointerId) return;
-
-            const handle = e.currentTarget;
-            const newIds = Array.from(document.querySelectorAll('.card')).map(c => c.dataset.id);
-
-            if (dragging.moved) {
-                items = newIds
-                    .map(id => items.find(item => item.id === id))
-                    .filter(Boolean);
-                saveItems();
-                showToast('✓ Order updated');
-            }
-
-            dragging.card.classList.remove('is-dragging');
-            dragging = null;
-
-            handle.onpointermove = null;
-            handle.onpointerup = null;
-            handle.onpointercancel = null;
-
-            renderItems();
-        }
+        };
 
         window.changeCount = function(id, loc, delta) {
             const item = items.find(i => i.id === id);
